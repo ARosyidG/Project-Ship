@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlacementHandler : MonoBehaviour
@@ -42,12 +43,6 @@ public class PlacementHandler : MonoBehaviour
     Coroutine PlacingCoroutine;
     [SerializeField] GameObject testObject;
     void Update(){
-        if(Input.GetKeyDown(KeyCode.Q)){
-            this.SelectedStructurePrefab = testObject;
-        }
-        if(Input.GetKeyDown(KeyCode.W)){
-            this.SelectedStructurePrefab = null;
-        }
     }
 
     IEnumerator PlacingStructure(){
@@ -55,12 +50,18 @@ public class PlacementHandler : MonoBehaviour
         m_selectedStructurePrefab = Instantiate(m_selectedStructurePrefab,tileOrigin.transform);
         while (true)
         {
+            Debug.Log("Placing...");
             Vector3 mousePos = inputManager.getMouseMappedPosition();
             Vector3Int mousePosInGrid = grid.WorldToCell(mousePos);
             mouseIndicator.transform.position = grid.CellToWorld(mousePosInGrid);
-            Debug.Log("Placing...");
+            bool isPlaceable = validatePlacement();
+            if(Input.GetKeyDown(KeyCode.Q)){ 
+                SelectedStructurePrefab.transform.Rotate(new Vector3(0,0,-90));  
+            }
+            if(Input.GetKeyDown(KeyCode.E)){ 
+                SelectedStructurePrefab.transform.Rotate(new Vector3(0,0,90));
+            }
             if(Input.GetMouseButtonDown(0)){
-                bool isPlaceable = validatePlacement();
                 if(isPlaceable){
                     SelectedStructurePrefab.transform.SetParent(ActiveFloor.transform);
                     SelectedStructurePrefab = null;
